@@ -18,7 +18,7 @@ pro = ts.pro_api('f558cbc6b24ed78c2104e209a8a8986b33ec66b7c55bcfa2f46bc108')
 # print(type(data.index))
 
 
-def plot_kline_volume_signal(data, name):
+def plot_kline_volume_signal(data, name) -> Grid:
     kline = (
         Kline(init_opts=opts.InitOpts(width="1800px", height="1000px"))
         .add_xaxis(xaxis_data=list(data.index))
@@ -169,7 +169,7 @@ def plot_kline_volume_signal(data, name):
         ),
     )
     grid_chart.render("kline_volume_signal.html")
-
+    return grid_chart
 
 def generate_html():
     stockcode = input()
@@ -178,4 +178,3 @@ def generate_html():
     plot_kline_volume_signal(data, name)
 
 generate_html()
-
