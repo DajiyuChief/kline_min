@@ -5,7 +5,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWebEngineWidgets import *
-from kline import generate_html
+from only_kline import generate_html
 
 
 class MainWindow(QMainWindow):
@@ -15,7 +15,7 @@ class MainWindow(QMainWindow):
         self.setGeometry(5, 30, 1850, 1100)
         self.browser = QWebEngineView()
         # #加载外部的web界面
-        url = os.getcwd() + os.path.sep + 'kline_volume_signal.html'
+        url = os.getcwd() + os.path.sep + 'min_kline.html'
         self.browser.load(QUrl.fromLocalFile(url))
         self.setCentralWidget(self.browser)
 

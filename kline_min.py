@@ -1,25 +1,14 @@
 import efinance as ef
 import tushare as ts
 from pyecharts import options as opts
-from pyecharts.charts import Kline, Bar, Grid, Line
+from pyecharts.charts import Kline, Bar, Grid, Line, Tab, Timeline
 from pyecharts.commons.utils import JsCode
-from getstockname import get_name
+from only_kline import plot_kline,grid
 
 pro = ts.set_token('f558cbc6b24ed78c2104e209a8a8986b33ec66b7c55bcfa2f46bc108')
 
-# 股票代码
-stock_code = '000001'
-# 5 分钟
-frequency = 5
-df = ef.stock.get_quote_history(stock_code, klt=frequency)
-# df2 = ts.get_hist_data('000001')
-df4 = ts.pro_bar(ts_code='600000.SH', freq='5min', start_date='2022-10-24 09:00:00', end_date='2022-10-25 15:00:00')
 
-
-# df3 = ts.pro_bar(ts_code='000001.SZ', freq='5min')
-
-
-def plot_kline_volume(data, name, freq):
+def generate_kline(data) -> Kline:
     kline = (
         Kline(init_opts=opts.InitOpts(width="1800px", height="1000px"))
         .add_xaxis(xaxis_data=list(data.index))
@@ -81,15 +70,18 @@ def plot_kline_volume(data, name, freq):
                              out_of_brush={"colorAlpha": 0.1},
                              brush_type="lineX",
                          ),
-                         title_opts=opts.TitleOpts(
-                             title=name,
-                             pos_left='center',
-                             title_textstyle_opts=opts.TextStyleOpts(
-                                 font_size=30
-                             )),
+                         # title_opts=opts.TitleOpts(
+                         #     title=name,
+                         #     pos_left='center',
+                         #     title_textstyle_opts=opts.TextStyleOpts(
+                         #         font_size=30
+                         #     )),
                          )
     )
+    return kline
 
+
+def generate_bar(data) -> Bar:
     bar = (
         Bar()
         .add_xaxis(xaxis_data=list(data.index))
@@ -124,9 +116,14 @@ def plot_kline_volume(data, name, freq):
             legend_opts=opts.LegendOpts(is_show=False),
         )
     )
+    return bar
 
     # kline.render("kline.html")   #test
 
+
+def grid_mutil(data) -> Grid:
+    kline = generate_kline(data)
+    bar = generate_bar(data)
     grid_chart = Grid(
         init_opts=opts.InitOpts(
             width="1800px",
@@ -141,23 +138,49 @@ def plot_kline_volume(data, name, freq):
         # overlap_kline_line,
         kline,
         grid_opts=opts.GridOpts(pos_left="10%", pos_right="8%", height="40%"),
-    )
+    ),
     grid_chart.add(
         bar,
         grid_opts=opts.GridOpts(
             pos_left="10%", pos_right="8%", pos_top="60%", height="20%"
         ),
     )
-    grid_chart.render("kline_volume"+str(freq)+"min"+".html")
+    # grid_chart.render("kline_volume" + str(freq) + "min" + ".html")
+    return grid_chart
+
+
+def multi_kline(data, name):
+    tab = Tab()
+    tab.add(grid_mutil(data), "5min_kline")
+    tab.add(grid_mutil(data), "15min_kline")
+    tab.add(grid_mutil(data), "30min_kline")
+    tab.add(grid_mutil(data), "60min_kline")
+    tab.render("tab_base.html")
 
 
 def generate_html():
+    tab = Tab()
     stockcode = input()
-    freq = int(input())
-    data = ef.stock.get_quote_history(stockcode, klt=freq)  # 将数据按照时间排序
-    data.set_index(["日期"], inplace=True)  # 设置日期为索引
-    name = get_name(stockcode)
-    plot_kline_volume(data, name, freq)
+    # name = get_name(stockcode)
+    data_5min = ef.stock.get_quote_history(stockcode, klt=5)
+    data_5min.set_index(["日期"], inplace=True)
+    data_15min = ef.stock.get_quote_history(stockcode, klt=15)
+    data_15min.set_index(["日期"], inplace=True)
+    data_30min = ef.stock.get_quote_history(stockcode, klt=30)
+    data_30min.set_index(["日期"], inplace=True)
+    data_60min = ef.stock.get_quote_history(stockcode, klt=60)
+    data_60min.set_index(["日期"], inplace=True)
+    tab.add(grid(data_5min), "5min")
+    tab.add(grid(data_15min), "15min")
+    tab.add(grid(data_30min), "30min")
+    tab.add(grid(data_60min), "60min")
+    #
+    # for freq in [5, 15, 30, 60]:
+    #     data = ef.stock.get_quote_history(stockcode, klt=freq)  # 将数据按照时间排序
+    #     data.set_index(["日期"], inplace=True)  # 设置日期为索引
+    #     tab.add(grid_mutil(data), str(freq) + "min_kline")
+    # tab.render("min_kline.html")
+    tab.render("min_kline.html")
 
 
 generate_html()
