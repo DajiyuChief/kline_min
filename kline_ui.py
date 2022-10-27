@@ -5,7 +5,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWebEngineWidgets import *
-from only_kline import generate_html
+from kline_min import generate_html
 
 
 class MainWindow(QMainWindow):
