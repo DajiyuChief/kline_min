@@ -141,7 +141,7 @@ def generate_html():
     tab = Tab()
     stockcode = input("输入股票代码：")
     name = get_name(stockcode)
-    df = ts.get_hist_data(stockcode).sort_index()
+    df = ts.get_hist_data(stockcode).sort_index() #生成带有均线的日K图
     for freq in [5, 15, 30, 60, 101]:  # 101为日代码
         data = ef.stock.get_quote_history(stockcode, klt=freq)  # 将数据按照时间排序
         data.set_index(["日期"], inplace=True)  # 设置日期为索引
