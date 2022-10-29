@@ -168,7 +168,6 @@ def plot_kline_volume_signal(data, name) -> Grid:
             pos_left="10%", pos_right="8%", pos_top="60%", height="20%"
         ),
     )
-    grid_chart.render("kline_volume_signal.html")
     return grid_chart
 
 def generate_html():
@@ -177,4 +176,3 @@ def generate_html():
     name = get_name(stockcode)
     plot_kline_volume_signal(data, name)
 
-generate_html()
